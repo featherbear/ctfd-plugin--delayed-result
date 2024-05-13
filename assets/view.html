@@ -1,7 +1,9 @@
 {% extends "challenge.html" %}
 
-{% block input %}
-<!-- TODO: Check if still in delay period -->
+{% block description %}
+    {{ super() }}
+
+    <!-- TODO: Check if still in delay period -->
     {% if attempts > 0 %}
     <div class="row text-center">
         <div class="col-12">
@@ -9,5 +11,4 @@
         </div>
     </div>
     {% endif %}
-    {{ super() }}
 {% endblock %}
