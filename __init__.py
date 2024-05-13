@@ -77,7 +77,7 @@ class DelayedResultChallenge(BaseChallenge):
             "id": challenge.id,
             "name": challenge.name,
             "value": challenge.value,
-            "expiry": challenge.expiry,
+            "expiry": challenge.expiry.strftime("%Y-%m-%dT%H:%M:%S"),
             "description": challenge.description,
             "connection_info": challenge.connection_info,
             "next_id": challenge.next_id,
