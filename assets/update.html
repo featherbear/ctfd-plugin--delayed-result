@@ -1,12 +1,13 @@
 {% extends "admin/challenges/update.html" %}
 
 {% block value %}
-<div class="form-group">
-	<label for="value">Hold Expiry<br>
-		<small class="form-text text-muted">
-			When submissions will be stop being held
-		</small>
-	</label>
-	<input type="datetime-local" class="form-control chal-expiry" name="expiry" value="{{ challenge.expiry }}" required>
-</div>
+	{{% super() }}
+	<div class="form-group">
+		<label for="value">Hold Expiry<br>
+			<small class="form-text text-muted">
+				When submissions will be stop being held
+			</small>
+		</label>
+		<input type="datetime-local" class="form-control chal-expiry" name="expiry" value="{{ challenge.expiry }}" required>
+	</div>
 {% endblock %}
