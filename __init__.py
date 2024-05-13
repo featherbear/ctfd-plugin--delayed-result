@@ -48,6 +48,10 @@ class DelayedResultChallenge(BaseChallenge):
     )
     challenge_model = DelayedResult
 
+
+    @classmethod
+    def is_delay_over(cls, challenge):
+        return False
     # @classmethod
     # def calculate_value(cls, challenge):
     #     f = DECAY_FUNCTIONS.get(challenge.function, logarithmic)
@@ -112,16 +116,24 @@ class DelayedResultChallenge(BaseChallenge):
         # return DelayedResultChallenge.calculate_value(challenge)
         return challenge
 
+    # Visibly the user gets $.attempts to see if they've submitted, so we can add a change to the theme
 
     @classmethod
     def attempt(cls, challenge, request):
-        return False, "Okay.."
+        if DelayedResultChallenge.is_delay_over(challenge):
+            return super().attempt(challenge, request)
 
-    # @classmethod
-    # def solve(cls, user, team, challenge, request):
-    #     super().solve(user, team, challenge, request)
-        # DelayedResultChallenge.calculate_value(challenge)
+        return True, "Your submission has been taken"
 
+    @classmethod
+    def solve(cls, user, team, challenge, request):
+        # Revert to usual flag behaviour if there is no more delay
+        if DelayedResultChallenge.is_delay_over(challenge):
+            return super().solve(user, team, challenge, request)
+        
+        # Add submission to the "fail" pile
+        # We should add some sort of timer to check
+        return super().fail(user, team, challenge, request)
 
 def load(app):
     app.db.create_all()
