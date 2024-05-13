@@ -47,14 +47,14 @@ class DelayedResultChallenge(BaseChallenge):
     )
     challenge_model = DelayedResult
 
-    @classmethod
-    def calculate_value(cls, challenge):
-        f = DECAY_FUNCTIONS.get(challenge.function, logarithmic)
-        value = f(challenge)
+    # @classmethod
+    # def calculate_value(cls, challenge):
+    #     f = DECAY_FUNCTIONS.get(challenge.function, logarithmic)
+    #     value = f(challenge)
 
-        challenge.value = value
-        db.session.commit()
-        return challenge
+    #     challenge.value = value
+    #     db.session.commit()
+    #     return challenge
 
     @classmethod
     def read(cls, challenge):
@@ -107,12 +107,18 @@ class DelayedResultChallenge(BaseChallenge):
                 value = float(value)
             setattr(challenge, attr, value)
 
-        return DelayedResultChallenge.calculate_value(challenge)
+        # return DelayedResultChallenge.calculate_value(challenge)
+        return challenge
+
 
     @classmethod
-    def solve(cls, user, team, challenge, request):
-        super().solve(user, team, challenge, request)
-        DelayedResultChallenge.calculate_value(challenge)
+    def attempt(cls, challenge, request):
+        return False, "Okay.."
+
+    # @classmethod
+    # def solve(cls, user, team, challenge, request):
+    #     super().solve(user, team, challenge, request)
+        # DelayedResultChallenge.calculate_value(challenge)
 
 
 def load(app):
