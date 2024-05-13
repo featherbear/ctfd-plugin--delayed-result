@@ -91,10 +91,10 @@ class DelayedResultChallenge(BaseChallenge):
         data = request.form or request.get_json()
 
         for attr, value in data.items():
-            # We need to set these to floats so that the next operations don't operate on strings
-            if attr in ("expiry"):
-                # TODO: Change to date
-                value = float(value)
+            # # We need to set these to floats so that the next operations don't operate on strings
+            # if attr in ("expiry"):
+            #     # TODO: Change to date
+            #     value = datetime.strptime("%Y-%m-%dT%H:%M")
             setattr(challenge, attr, value)
 
         db.session.commit()
