@@ -16,7 +16,7 @@ class DelayedResult(Challenges):
 
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
-        self.value = kwargs["initial"]
+        self.value = kwargs["expiry"]
     
     def isExpired(self):
         # self.getExpiry()
