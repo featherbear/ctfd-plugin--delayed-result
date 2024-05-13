@@ -14,7 +14,7 @@
 		<script>
 			(function() {
 				function load() {
-					if(!flatpickr) {
+					if (typeof flatpickr === 'undefined') {
 						setTimeout(load, 500)
 						return
 					}
