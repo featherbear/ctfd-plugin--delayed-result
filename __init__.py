@@ -20,6 +20,9 @@ class DelayedResult(Challenges):
 
     def getExpiry(self):
         return self.expiry
+    
+    def getNow(self):
+        return datetime.utcnow()
 
 
 class DelayedResultChallenge(BaseChallenge):
