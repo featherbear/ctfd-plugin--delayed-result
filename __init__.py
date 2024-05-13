@@ -4,6 +4,7 @@ from CTFd.models import Challenges, db
 from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.delayed_result.decay import DECAY_FUNCTIONS, logarithmic
+from CTFd.plugins.migrations import upgrade
 
 
 class DelayedResult(Challenges):
@@ -122,6 +123,8 @@ class DelayedResultChallenge(BaseChallenge):
 
 
 def load(app):
+    upgrade(plugin_name="delayed_result")
+
     CHALLENGE_CLASSES["delayed"] = DelayedResultChallenge
     register_plugin_assets_directory(
         app, base_path="/plugins/delayed_result/assets/"
