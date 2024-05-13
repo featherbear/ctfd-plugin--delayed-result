@@ -108,6 +108,7 @@ class DelayedResultChallenge(BaseChallenge):
                 value = float(value)
             setattr(challenge, attr, value)
 
+        db.session.commit()
         # return DelayedResultChallenge.calculate_value(challenge)
         return challenge
 
