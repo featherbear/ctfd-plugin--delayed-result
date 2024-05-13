@@ -10,7 +10,7 @@ from CTFd.plugins.migrations import upgrade
 class DelayedResult(Challenges):
     __mapper_args__ = {"polymorphic_identity": "delayed"}
     id = db.Column(
-        db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
+        None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
     initial = db.Column(db.Integer, default=0)
     minimum = db.Column(db.Integer, default=0)
