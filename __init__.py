@@ -123,7 +123,7 @@ class DelayedResultChallenge(BaseChallenge):
 
 
 def load(app):
-    upgrade(plugin_name="delayed_result")
+    app.db.create_all()
 
     CHALLENGE_CLASSES["delayed"] = DelayedResultChallenge
     register_plugin_assets_directory(
