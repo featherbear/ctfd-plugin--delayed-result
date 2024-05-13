@@ -1,9 +1,6 @@
 {% extends "admin/challenges/create.html" %}
 
 {% block header %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script id="flatpickrSrc" async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <div class="alert alert-secondary" role="alert">
 	Submissions will be held until a certain time. After this time, the latest held submission will be processed. New submissions will be processed as usual
 </div>
@@ -19,6 +16,8 @@
 			</small>
 		</label>
 		<input type="datetime-local" class="form-control" name="expiry" required>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<script id="flatpickrSrc" async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 		<script>
 			console.log('create exec');
 			document.querySelector('#flatpickrSrc').addEventListener('load', () => {
