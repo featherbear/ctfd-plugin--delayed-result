@@ -15,7 +15,7 @@
 				When submissions will be stop being held
 			</small>
 		</label>
-		<input type="datetime-local" class="form-control" name="expiry" required>
+		<input class="form-control" name="expiry" required>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 		<script>
@@ -28,7 +28,7 @@
 
 					flatpickr("input[name=expiry]", {
 						enableTime: true,
-						dateFormat: "Z",
+						dateFormat: "U",
 						altInput: true,
 						altFormat: "d-m-Y H:i",
 					})

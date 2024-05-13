@@ -12,14 +12,14 @@ class DelayedResult(Challenges):
     id = db.Column(
         None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
-    expiry = db.Column(db.DateTime, default=datetime.now)
+    expiry = db.Column(db.Integer)
 
     def isExpired(self):
         # return False
         return datetime.now() > self.getExpiry()
 
     def getExpiry(self):
-        return self.expiry
+        return datetime.fromtimestamp(self.expiry)
     
     def getNow(self):
         return datetime.now()
@@ -64,7 +64,7 @@ class DelayedResultChallenge(BaseChallenge):
             "id": challenge.id,
             "name": challenge.name,
             "value": challenge.value,
-            "expiry": challenge.expiry.strftime("%Y-%m-%dT%H:%M:%S"),
+            "expiry": datetime.fromtimestamp(challenge.expiry).strftime("%Y-%m-%dT%H:%M:%S"),
             "description": challenge.description,
             "connection_info": challenge.connection_info,
             "next_id": challenge.next_id,
@@ -108,7 +108,7 @@ class DelayedResultChallenge(BaseChallenge):
 
     @classmethod
     def attempt(cls, challenge, request):
-        if datetime.now() > challenge.expiry:
+        if datetime.now().timestamp() > challenge.expiry:
             return super().attempt(challenge, request)
 
         return False, "Your submission has been taken"
@@ -116,7 +116,7 @@ class DelayedResultChallenge(BaseChallenge):
     @classmethod
     def solve(cls, user, team, challenge, request):
         # Revert to usual flag behaviour if there is no more delay
-        if datetime.now() > challenge.expiry:
+        if datetime.now().timestamp() > challenge.expiry:
             return super().solve(user, team, challenge, request)
         
         # Add submission to the "fail" pile
