@@ -9,9 +9,6 @@
 {% block description %}
     {{ super() }}
 
-    {{ challenge.getExpiry() }}
-    {{ challenge.getNow() }}
-
     {% if not challenge.isExpired() and attempts > 0 %}
     <div class="row text-center">
         <div class="col-12">
