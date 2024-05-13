@@ -12,17 +12,17 @@ class DelayedResult(Challenges):
     id = db.Column(
         None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
-    expiry = db.Column(db.DateTime, default=datetime.utcnow)
+    expiry = db.Column(db.DateTime, default=datetime.now)
 
     def isExpired(self):
         # return False
-        return datetime.utcnow() > self.getExpiry()
+        return datetime.now() > self.getExpiry()
 
     def getExpiry(self):
         return self.expiry
     
     def getNow(self):
-        return datetime.utcnow()
+        return datetime.now()
 
 
 class DelayedResultChallenge(BaseChallenge):
@@ -108,7 +108,7 @@ class DelayedResultChallenge(BaseChallenge):
 
     @classmethod
     def attempt(cls, challenge, request):
-        if datetime.utcnow() > challenge.expiry:
+        if datetime.now() > challenge.expiry:
             return super().attempt(challenge, request)
 
         return False, "Your submission has been taken"
@@ -116,7 +116,7 @@ class DelayedResultChallenge(BaseChallenge):
     @classmethod
     def solve(cls, user, team, challenge, request):
         # Revert to usual flag behaviour if there is no more delay
-        if datetime.utcnow() > challenge.expiry:
+        if datetime.now() > challenge.expiry:
             return super().solve(user, team, challenge, request)
         
         # Add submission to the "fail" pile
