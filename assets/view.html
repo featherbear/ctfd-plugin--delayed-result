@@ -1,7 +1,7 @@
 {% extends "challenge.html" %}
 
 {% block solves %}
-    {% if challgenge.isExpired() %}
+    {% if challenge.isExpired() %}
         {{ super() }}
     {% endif %}
 {% endblock %}
