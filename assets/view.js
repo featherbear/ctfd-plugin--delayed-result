@@ -24,6 +24,8 @@ CTFd._internal.challenge.submit = function(preview) {
   }
 
   return CTFd.api.post_challenge_attempt(params, body).then(function(response) {
+    console.log(response)
+    
     if (response.status === 429) {
       // User was ratelimited but process response
       return response;

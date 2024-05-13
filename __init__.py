@@ -123,7 +123,7 @@ class DelayedResultChallenge(BaseChallenge):
         if DelayedResultChallenge.is_delay_over(challenge):
             return super().attempt(challenge, request)
 
-        return True, "Your submission has been taken"
+        return False, "Your submission has been taken"
 
     @classmethod
     def solve(cls, user, team, challenge, request):
