@@ -14,15 +14,12 @@ class DelayedResult(Challenges):
     )
     expiry = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(**kwargs)
-    
     def isExpired(self):
-        # self.getExpiry()
-        return False
+        # return False
+        return datetime.utcnow() > self.getExpiry()
 
     def getExpiry(self):
-        return str(type(self.expiry))
+        return self.expiry
 
 
 class DelayedResultChallenge(BaseChallenge):
@@ -50,19 +47,6 @@ class DelayedResultChallenge(BaseChallenge):
         static_folder="assets",
     )
     challenge_model = DelayedResult
-
-
-    @classmethod
-    def is_delay_over(cls, challenge):
-        return False
-    # @classmethod
-    # def calculate_value(cls, challenge):
-    #     f = DECAY_FUNCTIONS.get(challenge.function, logarithmic)
-    #     value = f(challenge)
-
-    #     challenge.value = value
-    #     db.session.commit()
-    #     return challenge
 
     @classmethod
     def read(cls, challenge):
@@ -121,7 +105,7 @@ class DelayedResultChallenge(BaseChallenge):
 
     @classmethod
     def attempt(cls, challenge, request):
-        if DelayedResultChallenge.is_delay_over(challenge):
+        if datetime.utcnow() > challenge.expiry:
             return super().attempt(challenge, request)
 
         return False, "Your submission has been taken"
@@ -129,7 +113,7 @@ class DelayedResultChallenge(BaseChallenge):
     @classmethod
     def solve(cls, user, team, challenge, request):
         # Revert to usual flag behaviour if there is no more delay
-        if DelayedResultChallenge.is_delay_over(challenge):
+        if datetime.utcnow() > challenge.expiry:
             return super().solve(user, team, challenge, request)
         
         # Add submission to the "fail" pile
