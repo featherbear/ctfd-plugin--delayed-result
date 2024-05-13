@@ -2,7 +2,7 @@
 
 {% block header %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script id="flatpickrSrc" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <div class="alert alert-secondary" role="alert">
 	Submissions will be held until a certain time. After this time, the latest held submission will be processed. New submissions will be processed as usual
@@ -20,11 +20,13 @@
 		</label>
 		<input type="datetime-local" class="form-control" name="expiry" required>
 		<script>
-			flatpickr("input[name=expiry]", {
-				enableTime: true,
-				dateFormat: "Z",
-				altInput: true,
-				altFormat: "d-m-Y H:i",
+			document.querySelector('#flatpickrSrc').addEventListener('load', () => {
+				flatpickr("input[name=expiry]", {
+					enableTime: true,
+					dateFormat: "Z",
+					altInput: true,
+					altFormat: "d-m-Y H:i",
+				})
 			})
 		</script>
 	</div>
