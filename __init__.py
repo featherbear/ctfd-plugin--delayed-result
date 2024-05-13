@@ -22,7 +22,7 @@ class DelayedResult(Challenges):
         return False
 
     def getExpiry(self):
-        return self["expiry"]
+        return self.expiry
 
 
 class DelayedResultChallenge(BaseChallenge):
