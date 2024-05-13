@@ -14,9 +14,8 @@ class DelayedResult(Challenges):
     )
     expiry = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(**kwargs)
-        self.value = kwargs["expiry"]
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(**kwargs)
     
     def isExpired(self):
         # self.getExpiry()
