@@ -107,20 +107,16 @@ class DelayedResultChallenge(BaseChallenge):
                 value = float(value)
             setattr(challenge, attr, value)
 
-        return DelayedResultChallenge
-    .calculate_value(challenge)
+        return DelayedResultChallenge.calculate_value(challenge)
 
     @classmethod
     def solve(cls, user, team, challenge, request):
         super().solve(user, team, challenge, request)
-
-        DelayedResultChallenge
-    .calculate_value(challenge)
+        DelayedResultChallenge.calculate_value(challenge)
 
 
 def load(app):
     CHALLENGE_CLASSES["dynamic"] = DelayedResultChallenge
-
     register_plugin_assets_directory(
         app, base_path="/plugins/delayed_result/assets/"
     )
