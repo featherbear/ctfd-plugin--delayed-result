@@ -116,7 +116,7 @@ class DelayedResultChallenge(BaseChallenge):
 
 
 def load(app):
-    CHALLENGE_CLASSES["dynamic"] = DelayedResultChallenge
+    CHALLENGE_CLASSES["delayed"] = DelayedResultChallenge
     register_plugin_assets_directory(
         app, base_path="/plugins/delayed_result/assets/"
     )
