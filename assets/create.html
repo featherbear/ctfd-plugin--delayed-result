@@ -20,7 +20,9 @@
 		</label>
 		<input type="datetime-local" class="form-control" name="expiry" required>
 		<script>
+			console.log('create exec');
 			document.querySelector('#flatpickrSrc').addEventListener('load', () => {
+				console.log('load');
 				flatpickr("input[name=expiry]", {
 					enableTime: true,
 					dateFormat: "Z",
