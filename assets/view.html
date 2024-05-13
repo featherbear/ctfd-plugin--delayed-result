@@ -1,13 +1,20 @@
 {% extends "challenge.html" %}
 
+
+{% block solves %}
+
+{% endblock %}
+
 {% block description %}
     {{ super() }}
+
+    {{ challenge.getExpiry() }}
 
     <!-- TODO: Check if still in delay period -->
     {% if attempts > 0 %}
     <div class="row text-center">
         <div class="col-12">
-            <p>You've already made a submission</p>
+            <p>You've already made a submission. Only your last submission will count</p>
         </div>
     </div>
     {% endif %}

@@ -5,21 +5,25 @@ from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.delayed_result.decay import DECAY_FUNCTIONS, logarithmic
 from CTFd.plugins.migrations import upgrade
-
+from datetime import datetime
 
 class DelayedResult(Challenges):
     __mapper_args__ = {"polymorphic_identity": "delayed"}
     id = db.Column(
         None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
-    initial = db.Column(db.Integer, default=0)
-    minimum = db.Column(db.Integer, default=0)
-    decay = db.Column(db.Integer, default=0)
-    function = db.Column(db.String(32), default="logarithmic")
+    expiry = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
-        super(DelayedResult, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.value = kwargs["initial"]
+    
+    def isExpired(self):
+        # self.getExpiry()
+        return False
+
+    def getExpiry(self):
+        return self["expiry"]
 
 
 class DelayedResultChallenge(BaseChallenge):
@@ -74,10 +78,7 @@ class DelayedResultChallenge(BaseChallenge):
             "id": challenge.id,
             "name": challenge.name,
             "value": challenge.value,
-            "initial": challenge.initial,
-            "decay": challenge.decay,
-            "minimum": challenge.minimum,
-            "function": challenge.function,
+            "expiry": challenge.expiry,
             "description": challenge.description,
             "connection_info": challenge.connection_info,
             "next_id": challenge.next_id,
@@ -108,7 +109,8 @@ class DelayedResultChallenge(BaseChallenge):
 
         for attr, value in data.items():
             # We need to set these to floats so that the next operations don't operate on strings
-            if attr in ("initial", "minimum", "decay"):
+            if attr in ("expiry"):
+                # TODO: Change to date
                 value = float(value)
             setattr(challenge, attr, value)
 
