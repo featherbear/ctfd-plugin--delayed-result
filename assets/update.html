@@ -10,16 +10,9 @@
 		</label>
 		<input type="datetime-local" class="form-control chal-expiry" name="expiry" value="{{ challenge.expiry }}" required>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-		<script id="flatpickrSrc" async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 		<script>
-			document.querySelector('#flatpickrSrc').addEventListener('load', () => {
-				flatpickr("input[name=expiry]", {
-					enableTime: true,
-					dateFormat: "Z",
-					altInput: true,
-					altFormat: "d-m-Y H:i",
-				})
-			})
+			
 		</script>
 	</div>
 {% endblock %}
