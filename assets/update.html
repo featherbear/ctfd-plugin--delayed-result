@@ -1,9 +1,12 @@
 {% extends "admin/challenges/update.html" %}
 
+{% block header %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+
 {% block value %}
 	{{ super() }}
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<div class="form-group">
 		<label for="value">Hold Expiry<br>
 			<small class="form-text text-muted">

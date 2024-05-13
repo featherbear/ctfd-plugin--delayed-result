@@ -1,6 +1,9 @@
 {% extends "admin/challenges/create.html" %}
 
 {% block header %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <div class="alert alert-secondary" role="alert">
 	Submissions will be held until a certain time. After this time, the latest held submission will be processed. New submissions will be processed as usual
 </div>
@@ -9,8 +12,6 @@
 
 {% block value %}
 	{{ super() }}
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<div class="form-group">
 		<label for="value">Hold Expiry<br>
 			<small class="form-text text-muted">
