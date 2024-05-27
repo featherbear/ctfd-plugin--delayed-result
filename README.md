@@ -1,14 +1,16 @@
-# Delayed Result Challenges for CTFd
+# Delayed Result Challenge plugin for CTFd
 
-The submission is always correct?
+This plugin adds a `delayed` challenge type, where the results of a challenge is held until a given `expiry` time.
 
-Once a user is marked as solved, the item goes green
-The site won't allow resubmission if solved
+Whilst the expiry time has not elapsed, the submission is marked as "incorrect".
 
-But we do want to accept any input without it erroring?
+When the expiry time has elapsed, future submissions function as normal.
+For any previous submissions, the latest incorrect submissions are checked
+* On CTFd load
+* On HTTP_GET(`/plugin/do_update_delayed_result`)
+* (TODO) Every minute
 
-So we need override attempt(), solve() and fail()
+## Installation
 
-attempt() -> always return True
-solve() -> don't actually add to solve unless time ready
-fail() -> set schedule to test and change to solve?
+Clone this repository into `plugins/delayed_result`.  
+Or if your CTFd configuration is IaC, then use a Git submodule.
