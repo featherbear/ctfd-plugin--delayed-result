@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify
 
 from CTFd.models import Challenges, Solves, Fails, Flags, db
 from CTFd.plugins import register_plugin_assets_directory
@@ -190,4 +190,4 @@ def load(app):
 
     @app.route('/plugin/do_update_delayed_result', methods=['GET'])
     def update():
-        return transition_solves_from_fail_pile()
+        return jsonify(transition_solves_from_fail_pile())
