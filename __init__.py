@@ -128,6 +128,7 @@ def transition_solves_from_fail_pile():
     isModificationMade = False
     
     print("Searching for candidate delayed result challenges")
+    results = []
     for challenge in DelayedResult.query.all():
         if not challenge.isExpired():
             continue
@@ -167,8 +168,9 @@ def transition_solves_from_fail_pile():
                         isModificationMade = True
                         db.session.delete(fail)
                         db.session.add(solve)
-                        print(f"Transitioned held attempt {solve=} for {challenge=}")
                         solves.append((fail.user_id, fail.team_id))
+                        results.append(solve)
+                        print(f"Transitioned held attempt {solve=} for {challenge=}")
                         break
                 except Exception:
                     pass
@@ -177,9 +179,15 @@ def transition_solves_from_fail_pile():
         db.session.commit()
         clear_standings()
         clear_challenges()
+    
+    return results
 
 def load(app):
     app.db.create_all()
     CHALLENGE_CLASSES["delayed"] = DelayedResultChallenge
     transition_solves_from_fail_pile()
     register_plugin_assets_directory(app, base_path="/plugins/delayed_result/assets/")
+
+    @app.route('/plugin/do_update_delayed_result', methods=['GET'])
+    def update():
+        return transition_solves_from_fail_pile()
