@@ -1,10 +1,11 @@
 from flask import Blueprint
 
-from CTFd.models import Challenges, db
+from CTFd.models import Challenges, Solves, Fails, Flags, db
 from CTFd.plugins import register_plugin_assets_directory
+from CTFd.plugins.flags import get_flag_class
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
-from CTFd.plugins.delayed_result.decay import DECAY_FUNCTIONS, logarithmic
-from CTFd.plugins.migrations import upgrade
+from CTFd.cache import clear_challenges, clear_standings
+
 from datetime import datetime
 
 class DelayedResult(Challenges):
@@ -20,7 +21,7 @@ class DelayedResult(Challenges):
 
     def getExpiry(self):
         return datetime.fromtimestamp(self.expiry)
-    
+
     def getNow(self):
         return datetime.now()
 
@@ -64,7 +65,9 @@ class DelayedResultChallenge(BaseChallenge):
             "id": challenge.id,
             "name": challenge.name,
             "value": challenge.value,
-            "expiry": datetime.fromtimestamp(challenge.expiry).strftime("%Y-%m-%dT%H:%M:%S"),
+            "expiry": datetime.fromtimestamp(challenge.expiry).strftime(
+                "%Y-%m-%dT%H:%M:%S"
+            ),
             "description": challenge.description,
             "connection_info": challenge.connection_info,
             "next_id": challenge.next_id,
@@ -94,21 +97,12 @@ class DelayedResultChallenge(BaseChallenge):
         data = request.form or request.get_json()
 
         for attr, value in data.items():
-            # # We need to set these to floats so that the next operations don't operate on strings
-            # if attr in ("expiry"):
-            #     # TODO: Change to date
-            #     value = datetime.strptime("%Y-%m-%dT%H:%M")
             setattr(challenge, attr, value)
 
         db.session.commit()
-        # return DelayedResultChallenge.calculate_value(challenge)
         return challenge
 
     # Visibly the user gets $.attempts to see if they've submitted, so we can add a change to the theme
-
-    '''
-    https://github.com/CTFd/CTFd/blob/69dc0a799ace1596d5a5f079db92684907b63882/CTFd/plugins/challenges/__init__.py#L110
-    '''
     @classmethod
     def attempt(cls, challenge, request):
         if datetime.now().timestamp() > challenge.expiry:
@@ -116,49 +110,76 @@ class DelayedResultChallenge(BaseChallenge):
 
         return False, "Your submission has been taken"
 
-    '''
+    """
     Adds to solve
-    '''
+    """
     @classmethod
     def solve(cls, user, team, challenge, request):
         # Revert to usual flag behaviour if there is no more delay
         if datetime.now().timestamp() > challenge.expiry:
             return super().solve(user, team, challenge, request)
-        
+
         # Add submission to the "fail" pile, so it doesn't appear as solved
         # We should add some sort of timer to check
         return super().fail(user, team, challenge, request)
 
+
 def transition_solves_from_fail_pile():
-    print(DelayedResult.query)
-    # Get challenges
-    # Check
-    # Move
-    '''
+    isModificationMade = False
+    
+    print("Searching for candidate delayed result challenges")
+    for challenge in DelayedResult.query.all():
+        if not challenge.isExpired():
+            continue
 
-       all_challenge_ids = {
-            c.id for c in Challenges.query.with_entities(Challenges.id).all()
-        }
-        get_all_challenges 
-    '''
-    pass
+        # Find submissions marked as "failed" that were submitted before the challenge expired
+        fails = (
+            Fails.query.filter(
+                Fails.challenge_id == challenge.id, Fails.date < challenge.getExpiry()
+            )
+            .order_by(Fails.date.desc())
+            .distinct(Fails.user_id)
+            .all()
+        )
 
-'''
-on load
-  Check for all existing challenges with unprocessed solves
+        # Someone with better SQL skill please make my code better
+        solves = [
+            (result.user_id, result.team_id)
+            for result in Solves.query.filter_by(challenge_id=challenge.id).all()
+        ]
 
-on schedule
-  same thing!
-'''
+        flags = Flags.query.filter_by(challenge_id=challenge.id).all()
+        for fail in fails:
+            if (fail.user_id, fail.team_id) in solves:
+                continue
+            for flag in flags:
+                try:
+                    if get_flag_class(flag.type).compare(flag, fail.provided):
+                        solve = Solves(
+                            # id=fail.id,
+                            challenge_id=fail.challenge_id,
+                            user_id=fail.user_id,
+                            team_id=fail.team_id,
+                            ip=fail.ip,
+                            provided=fail.provided,
+                            date=fail.date,
+                        )
+                        isModificationMade = True
+                        db.session.delete(fail)
+                        db.session.add(solve)
+                        print(f"Transitioned held attempt {solve=} for {challenge=}")
+                        solves.append((fail.user_id, fail.team_id))
+                        break
+                except Exception:
+                    pass
 
-class Scheduler:
-    pass
+    if isModificationMade:
+        db.session.commit()
+        clear_standings()
+        clear_challenges()
 
 def load(app):
     app.db.create_all()
     CHALLENGE_CLASSES["delayed"] = DelayedResultChallenge
     transition_solves_from_fail_pile()
-    
-    register_plugin_assets_directory(
-        app, base_path="/plugins/delayed_result/assets/"
-    )
+    register_plugin_assets_directory(app, base_path="/plugins/delayed_result/assets/")
