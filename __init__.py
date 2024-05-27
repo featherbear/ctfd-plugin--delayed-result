@@ -106,6 +106,9 @@ class DelayedResultChallenge(BaseChallenge):
 
     # Visibly the user gets $.attempts to see if they've submitted, so we can add a change to the theme
 
+    '''
+    https://github.com/CTFd/CTFd/blob/69dc0a799ace1596d5a5f079db92684907b63882/CTFd/plugins/challenges/__init__.py#L110
+    '''
     @classmethod
     def attempt(cls, challenge, request):
         if datetime.now().timestamp() > challenge.expiry:
@@ -113,20 +116,49 @@ class DelayedResultChallenge(BaseChallenge):
 
         return False, "Your submission has been taken"
 
+    '''
+    Adds to solve
+    '''
     @classmethod
     def solve(cls, user, team, challenge, request):
         # Revert to usual flag behaviour if there is no more delay
         if datetime.now().timestamp() > challenge.expiry:
             return super().solve(user, team, challenge, request)
         
-        # Add submission to the "fail" pile
+        # Add submission to the "fail" pile, so it doesn't appear as solved
         # We should add some sort of timer to check
         return super().fail(user, team, challenge, request)
 
+def transition_solves_from_fail_pile():
+    print(DelayedResult.query)
+    # Get challenges
+    # Check
+    # Move
+    '''
+
+       all_challenge_ids = {
+            c.id for c in Challenges.query.with_entities(Challenges.id).all()
+        }
+        get_all_challenges 
+    '''
+    pass
+
+'''
+on load
+  Check for all existing challenges with unprocessed solves
+
+on schedule
+  same thing!
+'''
+
+class Scheduler:
+    pass
+
 def load(app):
     app.db.create_all()
-
     CHALLENGE_CLASSES["delayed"] = DelayedResultChallenge
+    transition_solves_from_fail_pile()
+    
     register_plugin_assets_directory(
         app, base_path="/plugins/delayed_result/assets/"
     )
