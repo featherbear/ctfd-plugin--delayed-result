@@ -190,4 +190,4 @@ def load(app):
 
     @app.route('/plugin/do_update_delayed_result', methods=['GET'])
     def update():
-        return jsonify(transition_solves_from_fail_pile())
+        return jsonify(map(str,transition_solves_from_fail_pile()))
