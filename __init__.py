@@ -13,7 +13,7 @@ class DelayedResult(Challenges):
     id = db.Column(
         None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
-    expiry = db.Column(db.Integer)
+    expiry = db.Column(db.Integer, default=0)
 
     def isExpired(self):
         # return False
@@ -97,6 +97,8 @@ class DelayedResultChallenge(BaseChallenge):
         data = request.form or request.get_json()
 
         for attr, value in data.items():
+            if attr in ("expiry"):
+                value = float(value)
             setattr(challenge, attr, value)
 
         db.session.commit()
