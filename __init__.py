@@ -6,7 +6,7 @@ from CTFd.plugins.flags import get_flag_class
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.cache import clear_challenges, clear_standings
 
-from datetime import datetime
+from datetime import datetime, timedelta, UTC
 
 class DelayedResult(Challenges):
     __mapper_args__ = {"polymorphic_identity": "delayed"}
@@ -110,7 +110,9 @@ class DelayedResultChallenge(BaseChallenge):
         if datetime.now().timestamp() > challenge.expiry:
             return super().attempt(challenge, request)
 
-        return False, "Your submission has been taken"
+        expiry = datetime.fromtimestamp(challenge.expiry, UTC)
+        expiry = expiry.replace(microsecond=0, second=0) + timedelta(minutes=1)
+        return False, f"Your submission has been taken. Check back at {expiry.isoformat().replace('+00:00', 'Z')}"
 
     """
     Adds to solve
