@@ -9,10 +9,17 @@
 {% block description %}
     {{ super() }}
 
-    {% if not challenge.isExpired() and attempts > 0 %}
-    <div class="row text-center">
+    {% if not challenge.isExpired() %}
+    {# Hidden until the user has submitted; view.js reveals it after a submission #}
+    <div id="delayed-result-wait" class="row text-center"
+         data-expiry="{{ challenge.expiry }}"
+         data-now="{{ challenge.getNow().timestamp() | int }}"
+         {% if attempts == 0 %}style="display: none;"{% endif %}>
         <div class="col-12">
-            <p>You've already made a submission. Only your last submission will count</p>
+            <p>
+                You've already made a submission - your last submission will be counted.
+                Check back in <strong class="delayed-result-countdown">a little while</strong>.
+            </p>
         </div>
     </div>
     {% endif %}
