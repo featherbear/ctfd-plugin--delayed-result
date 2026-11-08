@@ -1,0 +1,33 @@
+# Local sandbox for trying the plugin: `docker compose up`, then open
+# http://localhost:8000. See "Local testing" in README.md.
+name: ctfd-delayed-result
+
+x-ctfd: &ctfd
+  image: ctfd/ctfd:3.8.9
+  environment:
+    SECRET_KEY: local-testing-only
+    # SQLite on the uploads volume (already owned by the ctfd user), so no
+    # database or redis containers are needed
+    DATABASE_URL: sqlite:////var/uploads/ctfd.db
+    SEED_DELAY_MINUTES: ${SEED_DELAY_MINUTES:-3}
+  volumes:
+    - .:/opt/CTFd/CTFd/plugins/delayed_result:ro
+    - ctfd-data:/var/uploads
+
+services:
+  # Sets CTFd up with an admin, a student and a delayed challenge on first run
+  seed:
+    <<: *ctfd
+    entrypoint: ["env", "PYTHONPATH=/opt/CTFd", "python", "/opt/CTFd/CTFd/plugins/delayed_result/sample/seed.py"]
+    restart: "no"
+
+  ctfd:
+    <<: *ctfd
+    ports:
+      - 8000:8000
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+
+volumes:
+  ctfd-data:
